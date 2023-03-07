@@ -1,0 +1,9 @@
+{
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.maxTokenizationLineLength": 2500
+  }
+}
+
+// 폴더의 최상단에 위치 (.vscode)
