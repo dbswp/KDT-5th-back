@@ -19,19 +19,20 @@
             <% for(let i=0; i<userCounts; i++) { %>
                 <li>
                     <p>
-                        <!-- 데이를 받고 싶을땐 <%= %> -->
-                        ID : <%= USERARR[i].id %>
+                        <!-- 데이를 받고 싶을땐 -->
+                        ID : <%= USER[i].id %>
                     </p>
                 </li>
                 <li>
                     <p>
-                        NAME : <%= USERARR[i].name %>
+                        NAME : <%= USER[i].name %>
                     </p>
                 </li>
                 <li>
                     <p>
-                        EMAIL : <%= USERARR[i].email %>
+                        EMAIL : <%= USER[i].email %>
                     </p>
+                    <a href="javascript:void(0)" onclick="deleteUser('<%= USER[i].id %>')">삭제</a>
                 </li>
             </br>
             <% } %>
@@ -39,6 +40,46 @@
         <li>회원정보가 잘못 되었습니다.</li>
         <% } %>
     </ul>
+    <form action="/users/add" method="post">
+        <div>
+            <label for="id">아이디</label>
+            <input type="text" name="id">
+        </div>
+        <div>
+            <label for="name">이름</label>
+            <input type="text" name="name">
+        </div>
+        <div>
+            <label for="email">이메일</label>
+            <input type="email" name="email">
+        </div>
+        <button type="submit">제출</button>        
+    </form>
     <img src="/images/images.jpg" alt="강아지 이미지">
+    <script>
+        // const deleteUser = (id) => {
+        //     fetch(`http://localhost:4000/users/delete/${id}`, {
+        //         method: 'DELETE',
+        //         headers: {
+        //             'Content-type': 'application/json',
+        //         }
+        //     }) .then((respose) => {
+        //         console.log(respose)
+        //         location.reload()
+        //     }) .catch((err) => {
+        //         consolo.log(err)
+        //     })
+        // }
+
+        const deleteUser = async (id) => {
+            const response = await fetch(`http://localhost:4000/users/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-type': 'application/json',
+                }
+            })
+            if (res) location.reload()
+        }
+    </script>
 </body>
 </html>
