@@ -5,6 +5,7 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = 4000;
@@ -15,11 +16,15 @@ const userRouter = require('./routes/users');
 const postRouter = require('./routes/post');
 // main.js에서 복잡하게 기능을 구현하는 코드는 빼서 모듈화
 const dataRouter = require('./routes/data');
+const boardRouter = require('./routes/board');
+const dbBoardRouter = require('./routes/dbBoard');
+const cookieRouter = require('./routes/cookie');
 
 // body-parser쓰는 기본 구조
 // form data에서 값 받고싶으면 사용
 app.use(bodyParser.json()); // json 형태로 전달
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 // console.log(__dirname)
@@ -32,6 +37,9 @@ app.use('/', mainRouter);
 app.use('/users', userRouter);
 app.use('/post', postRouter);
 app.use('/data', dataRouter);
+app.use('/board', boardRouter);
+app.use('/dbBoard', dbBoardRouter);
+app.use('/cookie', cookieRouter);
 // '/users'요청이 들어오면 userRouter가 다음값들 처리
 
 // 서버 전체에대한 명령어
@@ -44,7 +52,7 @@ app.use('/', (req, res) => {
 app.use((err, req, res, next) => {
   console.log(err.stack);
   res.status(err.statusCode);
-  res.send(err.message + `<br/> <a href="/">홈으로</a>`);
+  res.send(err.message);
 });
 
 app.listen(PORT, () => {
