@@ -5,9 +5,10 @@ const router = express.Router();
 
 // 로그인 확인용 미들웨어
 const isLogin = (req, res, next) => {
-  if (req.session.login) {
+  if (req.session.login || req.signedCookies.user) {
     next();
   } else {
+    res.status(400);
     res.send('로그인 해주세요.<br><a href="/login">로그인 페이지로 이동</a>');
   }
 };
@@ -18,8 +19,8 @@ router.get('/', isLogin, (req, res) => {
     boardDB.getAllArticles((data) => {
       const ARTICLE = data;
       const articleCounts = ARTICLE.length;
-      const { userID } = req.session;
-      res.render('db_board', { ARTICLE, articleCounts, userID });
+      const { userId } = req.session;
+      res.render('db_board', { ARTICLE, articleCounts, userId });
     });
   } else {
     res.status(400);
@@ -35,8 +36,14 @@ router.get('/write', isLogin, (req, res) => {
 });
 // 데이터 베이스에 글쓰기
 router.post('/write', isLogin, (req, res) => {
+  // USERID ---> req.session.userID
   if (req.body.title && req.body.content) {
-    boardDB.writeArticle(req.body, (data) => {
+    const newArticle = {
+      id: req.session.userId,
+      title: req.body.title,
+      content: req.body.content,
+    };
+    boardDB.writeArticle(newArticle, (data) => {
       if (data.affectedRows >= 1) {
         res.redirect('/dbBoard');
       } else {

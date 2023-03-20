@@ -7,9 +7,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+require('dotenv').config();
 
 const app = express();
-const PORT = 4000;
+const { PORT } = process.env;
 
 const mainRouter = require('./routes/index');
 // ./routes/users에서 기능을 정의해서 내보낸 모듈을 userRouter라는 이름의 변수를 선엉하여 담아주기
@@ -27,15 +28,15 @@ const loginRouter = require('./routes/login');
 // form data에서 값 받고싶으면 사용
 app.use(bodyParser.json()); // json 형태로 전달
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('dbswp'));
 app.use(
   session({
     secret: 'dbswp', // secret값으로 암호화
     resave: false, // 변경사항이 없어도 다시 저장
     saveUninitialized: true, // 세션에 저장할 내역이 없더라도 처음부터 세션 생성
-    cookie: {
-      maxAge: 1000 * 60 * 60,
-    },
+    // cookie: {
+    //   maxAge: 1000 * 60 * 60,
+    // },
   }),
 );
 
