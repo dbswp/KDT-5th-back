@@ -20,8 +20,12 @@ client.connect((err) => {
         nickName: 'head',
       },
       (inserterr, insertresult) => {
-        console.log(insertresult);
-        client.close();
+        if (insertresult.acknowledged) {
+          const findData = test.find({});
+          findData.toArray((err, data) => {
+            console.log(data);
+          });
+        }
       },
     );
   });
