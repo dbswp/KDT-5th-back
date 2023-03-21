@@ -11,6 +11,8 @@ require('dotenv').config();
 
 const app = express();
 const { PORT } = process.env;
+// const PORT = process.env.PORT;
+// const PORT = 4000;
 
 const mainRouter = require('./routes/index');
 // ./routes/users에서 기능을 정의해서 내보낸 모듈을 userRouter라는 이름의 변수를 선엉하여 담아주기
