@@ -8,37 +8,6 @@ const client = new MongoClient(uri, {
 });
 
 // insertOne
-const main = async () => {
-  try {
-    const db = await client.connect();
-
-    const test = client.db('kdt5').collection('test');
-
-    await test.deleteMany({});
-
-    // err는 insertManyResult에 들어가지 않음
-    await test.insertMany([
-      { name: 'pororo', age: 5 },
-      { name: 'loopy', age: 6 },
-      { name: 'crong', age: 4 },
-    ]);
-    // return을 만나면 함수 종료
-    // const deleteManyResult2 = await test.deleteMany(
-    //   { age: { $gte: 5 } },
-    //   { $set: { name: '5살 이상' } },
-    // );
-    // console.log(deleteManyResult2);
-    await test.updateMany({ age: { $gte: 5 } }, { $set: { name: '5살 이상' } });
-    const findCursor = test.find({ age: { $gte: 5 } });
-    const dataArr = await findCursor.toArray();
-    console.log(dataArr);
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-main();
-
 // client.connect((err) => {
 //   const test = client.db('kdt5').collection('test');
 //   // client를 불러와 kdt5라는 스키마를 생성후 collection으로 테이블 생성
