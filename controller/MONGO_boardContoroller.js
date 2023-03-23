@@ -2,12 +2,6 @@
 const { ObjectId } = require('mongodb');
 const mongoClient = require('./mongoConnect');
 
-const mongooseConnect = require('./mongooseConnect');
-// require('./mongooseConnect')
-// const로 변수를 받아오지 않아도 require로만으로도 불러올 수 있다.
-const Board = require('../models/board');
-// mongooseConnect();
-
 const UNEXPECTED_MSG = '<br><a href="/">메인 페이지로 이동</a>';
 
 const getAllArticles = async (req, res) => {
@@ -15,8 +9,8 @@ const getAllArticles = async (req, res) => {
     const client = await mongoClient.connect();
     const board = client.db('kdt5').collection('board');
 
-    const allArticleCursor = board.find({});
-    const ARTICLE = await allArticleCursor.toArray();
+    const allArticlesCursor = board.find({});
+    const ARTICLE = await allArticlesCursor.toArray();
 
     res.render('db_Board', {
       ARTICLE,
@@ -34,15 +28,12 @@ const writeArticle = async (req, res) => {
     const client = await mongoClient.connect();
     const board = client.db('kdt5').collection('board');
 
-    console.log(req.file);
-
     const newArticle = {
       USERID: req.session.userId,
       TITLE: req.body.title,
       CONTENT: req.body.content,
-      IMAGE: req.file ? req.file.filename : null,
     };
-    await Board.create(newArticle);
+    await board.insertOne(newArticle);
     res.redirect('/dbBoard');
   } catch (err) {
     console.error(err);
@@ -54,7 +45,7 @@ const getArticles = async (req, res) => {
   try {
     const client = await mongoClient.connect();
     const board = client.db('kdt5').collection('board');
-    const selectedArticle = await Board.findOne({
+    const selectedArticle = await board.findOne({
       _id: ObjectId(req.params.id),
     });
     res.status(200);
@@ -69,18 +60,9 @@ const modifyArticle = async (req, res) => {
   try {
     const client = await mongoClient.connect();
     const board = client.db('kdt5').collection('board');
-    const modify = {
-      TITLE: req.body.title,
-      CONTENT: req.body.content,
-    };
-
-    if (req.file) modify.IMAGE = req.file.filename;
-
-    await Board.updateOne(
+    await board.updateOne(
       { _id: ObjectId(req.params.id) },
-      {
-        $set: modify,
-      },
+      { $set: { TITLE: req.body.title, CONTENT: req.body.content } },
     );
     res.status(200);
     res.redirect('/dbBoard');
@@ -94,7 +76,7 @@ const deleteArticles = async (req, res) => {
   try {
     const client = await mongoClient.connect();
     const board = client.db('kdt5').collection('board');
-    await Board.deleteOne({
+    await board.deleteOne({
       _id: ObjectId(req.params.id),
     });
     res.status(200).json('삭제성공');

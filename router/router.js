@@ -45,6 +45,7 @@ app.use(
 app.set('view engine', 'ejs');
 // console.log(__dirname)
 app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 // app.use('/css', express.static('views/css'))
 // app.use('/js',express.static('js'))
 // app.use(express.static('js'))

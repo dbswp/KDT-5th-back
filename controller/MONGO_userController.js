@@ -1,8 +1,5 @@
-const mongooseConnect = require('./mongooseConnect');
-// require('./mongooseConnect')
-// const로 변수를 받아오지 않아도 require로만으로도 불러올 수 있다.
-const User = require('../models/user');
-// mongooseConnect();
+// const connection = require('./dbConnect');
+const mongoClient = require('./mongoConnect');
 const REG_UNEXPECTED_MSG =
   '알 수 없는 문제 발생 </br><a href="/register">회원가입으로 이동</a>';
 const REG_USERCHECK_MSG =
@@ -17,14 +14,25 @@ const LOGIN_WRONGPW_MSG =
 const LOGIN_WRONGREGI_MSG =
   '알 수 없는 문제 발생 </br><a href="/register">회원가입으로 이동</a>';
 
+// let client = undefined;
+// let user = undefined;
+
+// async function connect() {
+//   client = await mongoClient.connect();
+//   user = await client.db('kdt5').collection('user');
+//   console.log('!');
+// }
+// connect();
+
 // 회원 가입
-// 몽구스 삽입은 create, 뒤에 {} = One, 뒤에 [] = Many
 const registerUser = async (req, res) => {
   try {
-    // const duplicatedUser = await User.findOne({ id: req.body.id });
+    const client = await mongoClient.connect();
+    const user = await client.db('kdt5').collection('user');
+    const duplicatedUser = await user.findOne({ id: req.body.id });
     // else문 대신에 if문에서 아닌 조건을 걸어주고, return으로 함수 끝
-    // if (duplicatedUser) return res.status(400).send(REG_USERCHECK_MSG);
-    await User.create(req.body);
+    if (duplicatedUser) return res.status(400).send(REG_USERCHECK_MSG);
+    await user.insertOne(req.body);
     res.status(200).send(REG_SUCCESS_MSG);
   } catch (err) {
     console.error(err);
@@ -34,13 +42,17 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const duplicatedUser = await User.findOne({ id: req.body.id });
+    const client = await mongoClient.connect();
+    const user = await client.db('kdt5').collection('user');
+    const duplicatedUser = await user.findOne({ id: req.body.id });
     if (!duplicatedUser) return res.status(400).send(LOGIN_USERCHECK_MSG);
     if (duplicatedUser.password !== req.body.password)
       return res.status(400).send(LOGIN_WRONGPW_MSG);
     req.session.login = true;
     req.session.userId = req.body.id;
 
+    // 로그인 쿠키 발행
+    // user라는 이름에 회원정보 담기
     res.cookie('user', req.body.id, {
       maxAge: 1000 * 30,
       httpOnly: true,
@@ -59,3 +71,32 @@ module.exports = {
   registerUser,
   loginUser,
 };
+
+// const userDb = {
+//   // 중복회원 확인
+//   userCheck: async (userID) => {
+//     try {
+//       const client = await mongoClient.connect();
+//       const user = client.db('kdt5').collection('user');
+//       const findUser = await user.findOne({ id: userID });
+//       if (!findUser) return false;
+//       return findUser;
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   },
+
+//   registerUser: async (newUser) => {
+//     try {
+//       const client = await mongoClient.connect();
+//       const user = client.db('kdt5').collection('user');
+
+//       await user.insertOne(newUser);
+//       return true;
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   },
+// };
+
+// module.exports = userDb;
