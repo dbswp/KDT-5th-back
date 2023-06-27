@@ -1,2 +1,2 @@
-# KDT-5th-back
+# KDT-5th-backend
 본 프로젝트는 백엔드 강의 목적으로 공부하는 레포입니다.
